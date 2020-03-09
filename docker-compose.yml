@@ -20,9 +20,14 @@ services:
     volumes:
       - NGINX_LOGS:/var/log/nginx
       - NGINX_CERTS:/etc/letsencrypt
-#    environment:
+    environment:
 #      - CERTBOT_DOMAIN=rafael-vdvx.localhost.run
 #      - CERTBOT_MAIL=rafel747@gmail.com
+      - SSMTP_EMAIL=rafel747@gmail.com
+      - SSMTP_HOST=smtp.gmail.com:465
+      - SSMTP_TLS=YES
+      - SSMTP_TOEMAIL=rafael.s.carreira@gmail.com
+      - SSMTP_PASSWORD=password
 
    #configs:
    #   - source: NGINX_NODE

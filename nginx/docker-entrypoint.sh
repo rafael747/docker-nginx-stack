@@ -20,18 +20,34 @@ openssl req -x509 -nodes -newkey rsa:1024 -days 365 \
 		-keyout '/etc/letsencrypt/live/nginx/privkey.pem' -out '/etc/letsencrypt/live/nginx/fullchain.pem' -subj '/CN=localhost'
 
 # Verifica se o parametros do certbot foram informados
-if [ "$CERTBOT_DOMAIN" -a "$CERTBOT_MAIL" ]
+if [ "$CERTBOT_DOMAIN" -a "$CERTBOT_EMAIL" ]
 then
 	#inicia o nginx para fazer a verificação do certbot
 
 	nginx -g 'daemon on;'
 
-	certbot certonly --webroot -w /var/www/certbot -m "$CERTBOT_MAIL" -d "$CERTBOT_DOMAIN" --agree-tos -n --post-hook "nginx -s reload"
+	certbot certonly --webroot -w /var/www/certbot -m "$CERTBOT_EMAIL" -d "$CERTBOT_DOMAIN" --agree-tos -n --post-hook "nginx -s reload"
 	ln -sf /etc/letsencrypt/live/"$CERTBOT_DOMAIN"/fullchain.pem /etc/letsencrypt/live/nginx/fullchain.pem
 	ln -sf /etc/letsencrypt/live/"$CERTBOT_DOMAIN"/privkey.pem /etc/letsencrypt/live/nginx/privkey.pem
 
 	nginx -s stop
 
+fi
+
+# Cria arquivos de configuração para o envio de email da sumarização do log
+if [ "$SSMTP_EMAIL" -a "$SSMTP_HOST" -a "$SSMTP_PASSWORD" -a "$SSMTP_TOEMAIL" ]
+then
+	echo "root=$SSMTP_EMAIL" > /etc/ssmtp/ssmtp.conf
+	echo "mailhub=$SSMTP_HOST" >> /etc/ssmtp/ssmtp.conf
+	echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf
+	echo "AuthUser=$SSMTP_EMAIL" >> /etc/ssmtp/ssmtp.conf
+	echo "AuthPass=$SSMTP_PASSWORD" >> /etc/ssmtp/ssmtp.conf
+	[[ "$SSMTP_TLS" == "YES" ]] && echo "UseTLS=YES" >> /etc/ssmtp/ssmtp.conf
+	[[ "$SSMTP_STARTTLS" == "YES" ]] && echo "UseSTARTTLS=YES" >> /etc/ssmtp/ssmtp.conf
+
+	echo "root:$SSMTP_EMAIL:$SSMTP_HOST" > /etc/ssmtp/revaliases
+else
+	echo "Informações de email incompletas, não configurando o ssmtp"
 fi
 
 

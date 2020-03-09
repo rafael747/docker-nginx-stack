@@ -16,8 +16,10 @@ COPY nginx.conf /etc/nginx/nginx.conf
 #Copy logrotate nginx configuration
 COPY logrotate.conf /etc/logrotate.d/nginx
 
-COPY ssmtp.conf /etc/ssmtp/ssmtp.conf
+#COPY ssmtp.conf /etc/ssmtp/ssmtp.conf
 
+# script de sumarização e envio de email
+COPY nginx-log-email.sh /nginx-log-email.sh 
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
