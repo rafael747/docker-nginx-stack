@@ -1,8 +1,10 @@
 version: '3.5'
 services:
   node-app:
-    image: rafaelcarreira/node-app:1.0
-    #ports:
+    image: rafaelcarreira/node-app:1.1
+    deploy:
+      mode: global
+   #ports:
     #  - "3000:3000"
     #deploy:
     #  replicas: 5
@@ -15,6 +17,11 @@ services:
       - "443:443"
     deploy:
       replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
     depends_on:
       - node-app
     volumes:
@@ -27,7 +34,7 @@ services:
       - SSMTP_HOST=smtp.gmail.com:465
       - SSMTP_TLS=YES
       - SSMTP_TOEMAIL=rafael.s.carreira@gmail.com
-      - SSMTP_PASSWORD=password
+#      - SSMTP_PASSWORD=password
 
    #configs:
    #   - source: NGINX_NODE
