@@ -1,18 +1,18 @@
 version: '3.5'
 services:
   node-app:
-    image: rafaelcarreira/node-app:1.1
+    image: rafaelcarreira/node-app:1.0
     deploy:
       mode: global
-   #ports:
-    #  - "3000:3000"
-    #deploy:
-    #  replicas: 5
+    healthcheck:
+      test: curl -f http://localhost:3000 || false
+      interval: 10s
+      retries: 5
+      start_period: 10s
 
   nginx:
     image: rafaelcarreira/nginx-stack:1.0
     ports:
-      - "3000:3000"
       - "80:80"
       - "443:443"
     deploy:
@@ -22,28 +22,25 @@ services:
         delay: 5s
         max_attempts: 3
         window: 10s
+    healthcheck:
+      test: curl -f https://localhost -k || false
+      interval: 10s
+      retries: 5
+      start_period: 20s
     depends_on:
       - node-app
     volumes:
       - NGINX_LOGS:/var/log/nginx
       - NGINX_CERTS:/etc/letsencrypt
     environment:
-#      - CERTBOT_DOMAIN=rafael-vdvx.localhost.run
-#      - CERTBOT_MAIL=rafel747@gmail.com
-      - SSMTP_EMAIL=rafel747@gmail.com
+      - CERTBOT_DOMAIN=dominio.tld        #comente esse linha para utilizar um cert autoassinado
+      - CERTBOT_MAIL=email@dominio.tld
+      - SSMTP_EMAIL=meu-email@gmail.com   # é preciso habilitar suporte a apps menos seguros (gmail)
       - SSMTP_HOST=smtp.gmail.com:465
       - SSMTP_TLS=YES
-      - SSMTP_TOEMAIL=rafael.s.carreira@gmail.com
-#      - SSMTP_PASSWORD=password
-
-   #configs:
-   #   - source: NGINX_NODE
-   #     target: /etc/nginx/nginx.conf
-
+      - SSMTP_TOEMAIL=destino@dominio.tld
+      - SSMTP_PASSWORD=senha-email
 
 volumes:
   NGINX_LOGS:
   NGINX_CERTS:
-#configs:
-#  NGINX_NODE:
-#    external: true

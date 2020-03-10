@@ -1,25 +1,21 @@
 FROM node:lts
 
-# Create app directory
+# Para para p projeto em node
 WORKDIR /usr/src/app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
+# Copia arquivos package.json/package-lock.json para instalação de dependencias 
 COPY package*.json ./
 
-
+# Instalação do pm2 para gerenciamento dos processo do node
 RUN npm install -g pm2
 
+# Instalação de dependencias
 RUN npm install
 
-# If you are building your code for production
-# RUN npm ci --only=production
-
-# Bundle app source
+# Copia arquivos do projeto
 COPY . .
 
 EXPOSE 3000
-#CMD [ "node", "server.js" ]
 
+# Inicia o gerenciador pm2
 CMD [ "pm2", "start",  "--no-daemon", "processes.json" ]
