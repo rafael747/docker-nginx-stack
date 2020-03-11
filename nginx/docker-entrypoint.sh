@@ -54,6 +54,10 @@ then
 	[[ "$SSMTP_STARTTLS" == "YES" ]] && echo "UseSTARTTLS=YES" >> /etc/ssmtp/ssmtp.conf
 
 	echo "root:$SSMTP_EMAIL:$SSMTP_HOST" > /etc/ssmtp/revaliases
+	
+	# Cria um arquivo com o email de destino
+	echo "$SSMTP_TOEMAIL" > /etc/ssmtp/email_destino.txt
+
 else
 	echo "Informações de email incompletas, não configurando o ssmtp..."
 fi

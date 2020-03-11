@@ -5,7 +5,8 @@
 ##
 
 # Verifica os parametros de email
-if [ "$SSMTP_EMAIL" -a "$SSMTP_HOST" -a "$SSMTP_PASSWORD" -a "$SSMTP_TOEMAIL" ] && [ "$SSMTP_TLS" -o "$SSMTP_STARTTLS" ]
+#if [ "$SSMTP_EMAIL" -a "$SSMTP_HOST" -a "$SSMTP_PASSWORD" -a "$SSMTP_TOEMAIL" ] && [ "$SSMTP_TLS" -o "$SSMTP_STARTTLS" ]
+if [ -f /etc/ssmtp/email_destino.txt ]
 then
 	# monta o header do email
 	echo "To: $SSMTP_TOEMAIL" > /tmp/email
@@ -17,7 +18,7 @@ then
 	cat /var/log/nginx/node-app.log.1 |sort|uniq -c >> /tmp/email
 
 	# envia o email
-	ssmtp $SSMTP_TOEMAIL < /tmp/email
+	ssmtp `cat /etc/ssmtp/email_destino.txt` < /tmp/email
 else
 	echo "Email não configurado!"
 fi
